@@ -56,16 +56,28 @@ class UNet(nn.Module):
 
 
 # Load model
+from pathlib import Path
+
 @st.cache_resource
 def load_model():
     model = UNet(num_classes=4)
+
+    model_path = Path(__file__).parent / "neurofusion_unet.pth"
+
+    if not model_path.exists():
+        raise FileNotFoundError(
+            f"Model file not found: {model_path}"
+        )
+
     state = torch.load(
-        "/content/neurofusion_unet.pth",
+        model_path,
         map_location="cpu",
         weights_only=True
     )
+
     model.load_state_dict(state)
     model.eval()
+
     return model
 
 
